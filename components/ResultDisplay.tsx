@@ -1,5 +1,5 @@
-
 import React from 'react';
+// Fix: Correctly import the PredictionResult type from the updated types.ts file.
 import type { PredictionResult } from '../types';
 
 interface ResultDisplayProps {
@@ -22,7 +22,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
     </svg>
   );
 
-  const formattedAction = result.recommended_action
+  const formattedAction = (result.recommended_action || '')
     .split(/-\s/g)
     .map(item => item.trim())
     .filter(item => item.length > 0)
@@ -66,10 +66,6 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result }) => {
   );
 };
 
-// Add fade-in animation to tailwind config (not possible here, but conceptually)
-// We can achieve a similar effect with a simple CSS rule if we could add one.
-// Instead, let's just define a placeholder style tag in the component to demonstrate.
-// In a real app, this would be in a global CSS file or configured in tailwind.config.js
 const AnimationStyles = () => (
     <style>{`
       @keyframes fadeIn {

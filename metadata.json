@@ -1,7 +1,4 @@
 {
   "name": "Paddy Pest Predictor",
-  "description": "An AI-powered tool for farmers to identify paddy crop pests. Upload a photo of your crop or take one with your camera to get an instant analysis, description of the pest, and recommended actions to protect your harvest.",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "description": "An AI-powered tool for farmers to identify paddy crop pests. Upload a photo of your crop or take one with your camera to get an instant analysis, description of the pest, and recommended actions to protect your harvest."
 }

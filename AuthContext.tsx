@@ -1,73 +1,97 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import type { User } from './types';
 import * as db from './services/databaseService';
 
 interface AuthContextType {
-  isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<User | null>;
   logout: () => void;
   register: (email: string, mobile: string, password: string) => Promise<{ success: boolean; message: string; }>;
-  resetPassword: (mobile: string, newPassword: string) => Promise<boolean>;
-  findUserByMobile: (mobile: string) => Promise<boolean>;
+  findUserByMobile: (mobile: string) => Promise<User | null>;
+  resetUserPassword: (mobile: string, newPassword: string) => Promise<boolean>;
 }
 
-export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initialize = async () => {
       await db.initializeDatabase();
-      
-      const loggedInUser = sessionStorage.getItem('loggedInUser');
-      if (loggedInUser) {
-          const foundUser = JSON.parse(loggedInUser);
-          setUser(foundUser);
-          setIsAuthenticated(true);
+      // For persistence, we could use localStorage to store the logged-in user.
+      const storedUser = sessionStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
       }
+      setLoading(false);
     };
     initialize();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    const foundUser = await db.loginUser(email, password);
-    
-    if (foundUser) {
-      // Exclude password from the user object stored in state and session
-      const { password, ...userToStore } = foundUser;
-      setUser(userToStore);
-      setIsAuthenticated(true);
-      sessionStorage.setItem('loggedInUser', JSON.stringify(userToStore));
-      return true;
+  const login = async (email: string, password: string) => {
+    setLoading(true);
+    const loggedInUser = await db.loginUser(email, password);
+    if (loggedInUser) {
+      // Omit password from user object stored in state/session
+      const { password, ...userToStore } = loggedInUser;
+      const finalUser = userToStore as User
+      setUser(finalUser);
+      sessionStorage.setItem('user', JSON.stringify(finalUser));
     }
-    return false;
+    setLoading(false);
+    return loggedInUser;
   };
 
   const logout = () => {
     setUser(null);
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('loggedInUser');
+    sessionStorage.removeItem('user');
   };
 
-  const register = async (email: string, mobile: string, password: string): Promise<{ success: boolean; message: string; }> => {
-    return db.registerUser(email, mobile, password);
+  const register = async (email: string, mobile: string, password: string) => {
+    setLoading(true);
+    const result = await db.registerUser(email, mobile, password);
+    setLoading(false);
+    return result;
   };
   
-  const findUserByMobile = async (mobile: string): Promise<boolean> => {
-    const user = await db.findUserByMobile(mobile);
-    return !!user;
-  };
+  const findUserByMobile = async (mobile: string) => {
+    setLoading(true);
+    const result = await db.findUserByMobile(mobile);
+    setLoading(false);
+    return result;
+  }
+  
+  const resetUserPassword = async (mobile: string, newPassword: string) => {
+    setLoading(true);
+    const result = await db.resetUserPassword(mobile, newPassword);
+    setLoading(false);
+    return result;
+  }
 
-  const resetPassword = async (mobile: string, newPassword: string): Promise<boolean> => {
-    return db.resetUserPassword(mobile, newPassword);
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+    findUserByMobile,
+    resetUserPassword
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, register, resetPassword, findUserByMobile }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

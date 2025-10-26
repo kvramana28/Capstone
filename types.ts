@@ -9,6 +9,6 @@ export interface User {
   id: string;
   email: string;
   mobile: string;
-  password?: string; // Password should not be stored in client-side state long-term
-  role: 'farmer' | 'admin';
+  password?: string; // Password should not typically be stored on the frontend user object
+  role: 'admin' | 'farmer';
 }

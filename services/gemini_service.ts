@@ -1,10 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { PredictionResult } from '../types';
 
-// Fix: Initialize the GoogleGenAI client with the API key from environment variables.
+// Initialize the GoogleGenAI client with the API key from environment variables.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-// Fix: Define the response schema using the Type enum from the @google/genai SDK.
+// Define the response schema using the Type enum from the @google/genai SDK.
 const pestPredictionSchema = {
   type: Type.OBJECT,
   properties: {
@@ -43,13 +43,12 @@ const fileToGenerativePart = async (file: File) => {
 /**
  * Analyzes an image of a paddy crop and returns a pest prediction.
  */
-// Fix: Rewrote the function to use the modern @google/genai SDK and async/await syntax.
-export const getPestPrediction = async (imageFile: File): Promise<PredictionResult> => {
+export const get_pest_prediction = async (imageFile: File): Promise<PredictionResult> => {
     const prompt = "Analyze the provided image of a paddy plant. Identify any pests or diseases, or confirm if it's healthy. Respond ONLY with a JSON object matching the provided schema.";
     
     const imagePart = await fileToGenerativePart(imageFile);
 
-    // Fix: Use ai.models.generateContent instead of the deprecated GenerativeModel class.
+    // Use ai.models.generateContent with the correct model and configuration.
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [{ parts: [{ text: prompt }, imagePart] }],
@@ -59,7 +58,13 @@ export const getPestPrediction = async (imageFile: File): Promise<PredictionResu
         }
     });
 
-    // Fix: Extract text from the response object directly using the .text property.
+    // Extract text from the response object directly using the .text property.
     const resultText = response.text;
-    return JSON.parse(resultText) as PredictionResult;
+    
+    try {
+        return JSON.parse(resultText) as PredictionResult;
+    } catch (e) {
+        console.error("Error parsing Gemini response:", resultText);
+        throw new Error("Failed to get a valid analysis from the model. The image might not be clear or may not contain a paddy plant.");
+    }
 };

@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { AuthContext } from './AuthContext';
+import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from './AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './components/Login';
@@ -10,50 +10,67 @@ import AdminDashboard from './components/AdminDashboard';
 import TermsOfService from './components/TermsOfService';
 import PrivacyPolicy from './components/PrivacyPolicy';
 
-type View = 'login' | 'register' | 'forgotPassword' | 'terms' | 'privacy';
+const AppRouter: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
+  const { user, loading } = useAuth();
+  const [path, setPath] = useState(window.location.pathname);
 
-const App: React.FC = () => {
-  const { isAuthenticated, user } = useContext(AuthContext);
-  const [currentView, setCurrentView] = useState<View>('login');
+  useEffect(() => {
+    const onLocationChange = () => {
+      setPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', onLocationChange);
+    return () => window.removeEventListener('popstate', onLocationChange);
+  }, []);
 
-  const renderAuthView = () => {
-    switch (currentView) {
-      case 'register':
-        return <Register onSwitchView={() => setCurrentView('login')} />;
-      case 'forgotPassword':
-        return <ForgotPassword onSwitchView={() => setCurrentView('login')} />;
-      case 'terms':
-        return <TermsOfService onGoBack={() => setCurrentView('login')} />;
-      case 'privacy':
-        return <PrivacyPolicy onGoBack={() => setCurrentView('login')} />;
-      case 'login':
-      default:
-        return <Login onSwitchToRegister={() => setCurrentView('register')} onSwitchToForgotPassword={() => setCurrentView('forgotPassword')} />;
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex-grow container mx-auto p-8 flex justify-center items-center">
+        <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-green-600 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
-  const renderAppContent = () => {
-    if (!isAuthenticated || !user) {
-      return (
-        <main className="flex-grow container mx-auto p-4 md:p-8 flex flex-col items-center justify-center">
-          {renderAuthView()}
-        </main>
-      );
-    }
+  // Public routes
+  if (path === '/terms') return <TermsOfService onNavigate={onNavigate} />;
+  if (path === '/privacy') return <PrivacyPolicy onNavigate={onNavigate} />;
 
-    if (user.role === 'admin') {
+  // Auth routes
+  if (!user) {
+    if (path === '/register') return <Register onNavigate={onNavigate} />;
+    if (path.startsWith('/forgot_password')) return <ForgotPassword onNavigate={onNavigate} />;
+    return <Login onNavigate={onNavigate} />;
+  }
+
+  // Protected routes
+  if (user.role === 'admin') {
+    if (path === '/admin') {
       return <AdminDashboard />;
     }
-    
-    return <PestPredictor />;
+  }
+  
+  // Default to predictor for farmers, or admin
+  if (path === '/' || path === '/admin') {
+    return user.role === 'admin' ? <AdminDashboard /> : <PestPredictor />;
+  }
+
+  return <PestPredictor />;
+};
+
+const App: React.FC = () => {
+  const handleNavigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    const navEvent = new PopStateEvent('popstate');
+    window.dispatchEvent(navEvent);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-green-50/50 font-sans">
-      <Header />
-      {renderAppContent()}
-      <Footer onNavigate={(view) => setCurrentView(view)} />
-    </div>
+    <AuthProvider>
+      <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
+        <Header onNavigate={handleNavigate} />
+        <AppRouter onNavigate={handleNavigate} />
+        <Footer onNavigate={handleNavigate}/>
+      </div>
+    </AuthProvider>
   );
 };
 

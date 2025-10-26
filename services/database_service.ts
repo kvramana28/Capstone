@@ -2,7 +2,6 @@
 // For this frontend-only application, it uses localStorage as a mock database.
 // All functions are async to mimic real API calls.
 
-// Fix: Import the User type to resolve the type error.
 import type { User } from '../types';
 
 const USERS_STORAGE_KEY = 'users';
@@ -23,7 +22,7 @@ const setUsers = (users: User[]) => {
     localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 };
 
-export const initializeDatabase = async () => {
+export const init_db = async () => {
     await simulateLatency(10); // minimal delay for init
     const users = getUsers();
     const adminExists = users.some((u: User) => u.role === 'admin');
@@ -34,14 +33,14 @@ export const initializeDatabase = async () => {
     }
 };
 
-export const loginUser = async (email: string, password: string): Promise<User | null> => {
+export const login_user = async (email: string, password: string): Promise<User | null> => {
     await simulateLatency();
     const users = getUsers();
     const foundUser = users.find(u => u.email === email && u.password === password);
     return foundUser || null;
 };
 
-export const registerUser = async (email: string, mobile: string, password: string): Promise<{ success: boolean; message: string; }> => {
+export const register_user = async (email: string, mobile: string, password: string): Promise<{ success: boolean; message: string; }> => {
     await simulateLatency();
     const users = getUsers();
     const emailExists = users.some(u => u.email === email);
@@ -65,13 +64,13 @@ export const registerUser = async (email: string, mobile: string, password: stri
     return { success: true, message: "Registration successful! Please log in." };
 };
 
-export const findUserByMobile = async (mobile: string): Promise<User | null> => {
+export const find_user_by_mobile = async (mobile: string): Promise<User | null> => {
     await simulateLatency();
     const users = getUsers();
     return users.find(u => u.mobile === mobile) || null;
 };
 
-export const resetUserPassword = async (mobile: string, newPassword: string): Promise<boolean> => {
+export const reset_user_password = async (mobile: string, newPassword: string): Promise<boolean> => {
     await simulateLatency();
     let users = getUsers();
     const userIndex = users.findIndex(u => u.mobile === mobile);
@@ -83,7 +82,7 @@ export const resetUserPassword = async (mobile: string, newPassword: string): Pr
     return false;
 };
 
-export const getFarmers = async (): Promise<User[]> => {
+export const get_farmers = async (): Promise<User[]> => {
     await simulateLatency();
     const allUsers = getUsers();
     return allUsers.filter(user => user.role === 'farmer');
