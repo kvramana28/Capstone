@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <h2>AI Assistant for Paddy Crop</h2>
+        <p>
+            Ask any doubt related to paddy crop, pests, fertilizers, water management or yield.
+            The assistant will use simple AI rules and your last detection (if any) to guide you.
+        </p>
+    </div>
+</section>
+
+<section class="upload-section">
+    <div class="card">
+        <h3>Ask a Question</h3>
+        <form method="POST" class="upload-form">
+            <textarea name="question" rows="3"
+                      style="width:100%; border-radius: 12px; padding: 0.6rem; border: 1px solid var(--border-subtle); background: rgba(15,23,42,0.8); color: #fff;"
+                      placeholder="For example: What pesticide should I use for brown planthopper?">{{ question }}</textarea>
+            <button type="submit" class="btn-primary">Get Advice</button>
+        </form>
+    </div>
+
+    {% if answer %}
+    <div class="card">
+        <h3>Assistant Response</h3>
+        <pre style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem; margin: 0;">{{ answer }}</pre>
+    </div>
+    {% endif %}
+
+    {% if last_prediction %}
+    <div class="card">
+        <h3>Last Detected Pest Context</h3>
+        <p>
+            <strong>Last image prediction:</strong>
+            {{ last_prediction | replace("_", " ") | title }}
+        </p>
+        {% if last_pest_info %}
+            <p><strong>Short description:</strong> {{ last_pest_info.description }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

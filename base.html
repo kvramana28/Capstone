@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Paddy Pest Detection AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- You can keep using your existing CSS file.
+         Just replace static/css/style.css content with your own styles. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Optional: Google Fonts / Bootstrap (remove if your CSS already has everything) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+    <header class="app-header">
+    <div class="container header-inner">
+        <h1 class="logo">Paddy Pest Detection</h1>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}">Detection</a>
+            <a href="{{ url_for('assistant') }}">AI Assistant</a>
+        </nav>
+    </div>
+</header>
+
+
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-wrapper">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container">
+            <span>&copy; {{ 2025 }} Smart Farming AI · Paddy Pest Detection</span>
+        </div>
+    </footer>
+</body>
+</html>

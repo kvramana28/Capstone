@@ -1,0 +1,199 @@
+/* -------------- GLOBAL THEME -------------- */
+
+:root {
+    --primary: #2e7d32; /* Deep green */
+    --primary-light: #4CAF50;
+    --primary-soft: #A5D6A7;
+    --accent: #66bb6a;
+    --light-bg: #f7fbf7;
+    --light-gradient: linear-gradient(to bottom, #F8FFF8, #EAF7E8);
+    --card-bg: #ffffff;
+    --border: #dce7d8;
+    --radius: 18px;
+    --shadow: 0px 6px 20px rgba(0, 0, 0, 0.06);
+    --text-dark: #1b321b;
+    --text-muted: #5f6f61;
+    --warning: #ffb74d;
+    --error: #e57373;
+    --font: "Inter", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font);
+    background: var(--light-gradient);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* -------------- NAVIGATION -------------- */
+
+.app-header {
+    padding: 12px 0;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo::before {
+    content: "🌿";
+    font-size: 20px;
+}
+
+.nav-links a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 15px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: 0.2s ease;
+}
+
+.nav-links a:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+/* -------------- HERO SECTION -------------- */
+
+.hero {
+    text-align: center;
+    max-width: 900px;
+    margin: 40px auto 20px;
+}
+
+.hero-text h2 {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.hero-text span {
+    color: var(--accent);
+}
+
+.hero-text p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+/* -------------- CARD -------------- */
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 28px;
+    max-width: 720px;
+    margin: auto;
+    margin-top: 35px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+/* -------------- FILE UPLOAD BOX -------------- */
+
+.upload-box {
+    border: 2px dashed var(--primary-soft);
+    border-radius: 16px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    background: #fafdf9;
+}
+
+.upload-box i {
+    font-size: 42px;
+    color: var(--primary);
+}
+
+/* -------------- BUTTONS -------------- */
+
+button, .btn-primary {
+    padding: 12px 26px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 15px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--primary);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-soft);
+}
+
+/* -------------- PREDICTION RESULT -------------- */
+
+.result-card {
+    max-width: 760px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: white;
+    box-shadow: var(--shadow);
+}
+
+/* -------------- IMAGE PREVIEW -------------- */
+
+.preview-image {
+    width: 100%;
+    max-height: 350px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+/* -------------- FOOTER -------------- */
+
+.app-footer {
+    text-align: center;
+    padding: 18px;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 60px;
+}

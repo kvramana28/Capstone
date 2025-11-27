@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <h2>Detect Pests in Paddy Crop Using AI</h2>
+        <p>
+            Upload a clear photo of a paddy leaf or plant. Our Convolutional Neural Network
+            (CNN) model will analyze the image and predict the most likely pest (or healthy plant).
+        </p>
+    </div>
+</section>
+
+<section class="upload-section">
+    <div class="card">
+        <h3>Upload Paddy Field Image</h3>
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <label class="file-input-label">
+                <span>Select image</span>
+                <input type="file" name="file" accept="image/*" required>
+            </label>
+            <button type="submit" class="btn-primary">Analyze Pest</button>
+        </form>
+    </div>
+
+    {% if prediction %}
+<div class="card result-card">
+    <div>
+        <h3>Prediction Result</h3>
+        <div class="result-text">
+            <p class="prediction-label">
+                <strong>Pest / Condition:</strong>
+                {{ prediction | replace("_", " ") | title }}
+            </p>
+            <p class="confidence-label">
+                <strong>Confidence:</strong> {{ confidence }}%
+            </p>
+        </div>
+
+        {% if pest_info %}
+        <div class="result-text" style="margin-top: 0.75rem;">
+            <p><strong>About this pest:</strong> {{ pest_info.description }}</p>
+
+            {% if pest_info.pesticides %}
+            <p><strong>Example pesticide options*</strong> (verify locally before use):</p>
+            <ul>
+                {% for p in pest_info.pesticides %}
+                <li>
+                    <strong>{{ p.name }}</strong> – {{ p.dose }}<br>
+                    <span>{{ p.usage }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if pest_info.advice %}
+                <p><strong>Field management tips:</strong> {{ pest_info.advice }}</p>
+            {% endif %}
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                *These are general examples. Always confirm dose and product with your local agriculture officer or extension service.
+            </p>
+        </div>
+        {% else %}
+        <p class="result-text" style="margin-top: 0.75rem;">
+            Detailed advisory is not configured for this class yet. You can still ask questions in the
+            <a href="{{ url_for('assistant') }}">AI Assistant</a> page.
+        </p>
+        {% endif %}
+    </div>
+
+    {% if file_url %}
+    <div class="preview-wrapper">
+        <img src="{{ file_url }}" alt="Uploaded image" class="preview-image">
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+</section>
+{% endblock %}
